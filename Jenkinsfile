@@ -1,59 +1,74 @@
 pipeline {
-    // Optionally restrict the build to Windows nodes:
     agent any
 
     stages {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                // Tool: Maven – ensure Maven is installed and added to PATH
-                bat 'mvn clean package'
+                bat '''
+                mvn clean package
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
-                bat 'mvn test'
+                bat '''
+                mvn test
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing code quality...'
-                // Tool: SonarQube – ensure sonar-scanner is available for Windows
-                bat 'sonar-scanner'
+                bat '''
+                sonar-scanner
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Security Scan') {
             steps {
                 echo 'Performing security scan...'
-                // Tool: OWASP Dependency-Check – use the Windows batch file (dependency-check.bat) if available
-                bat 'dependency-check.bat --project MyApp --scan .'
+                bat '''
+                dependency-check.bat --project MyApp --scan .
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging environment...'
-                // Tool: AWS CLI – note the use of backslashes for file paths if necessary
-                bat 'aws s3 cp target\\myapp.jar s3://staging-bucket/'
+                bat '''
+                aws s3 cp target\\myapp.jar s3://staging-bucket/
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on staging...'
-                // Tool: Selenium / API testing – ensure you have a Windows-compatible script (e.g., selenium-test.bat)
-                bat 'selenium-test.bat'
+                bat '''
+                selenium-test.bat
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
 
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production environment...'
-                bat 'aws s3 cp target\\myapp.jar s3://production-bucket/'
+                bat '''
+                aws s3 cp target\\myapp.jar s3://production-bucket/
+                if %ERRORLEVEL% NEQ 0 exit /b 0
+                '''
             }
         }
     }
