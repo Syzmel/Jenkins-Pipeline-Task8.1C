@@ -1,6 +1,6 @@
 pipeline {
     // Optionally restrict the build to Windows nodes:
-    agent { label 'windows' }
+    agent any
 
     stages {
         stage('Build') {
